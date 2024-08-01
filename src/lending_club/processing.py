@@ -116,14 +116,16 @@ def map_categorical(loans: pd.DataFrame, mapping: Mapping) -> pd.DataFrame:
     )
 
 
-def apply_string_transformations(loans: pd.DataFrame) -> pd.DataFrame:
+def apply_transformations(loans: pd.DataFrame) -> pd.DataFrame:
     """Apply string transformation."""
-    log.info("Applying string transformation...")
+    log.info("Applying transformation...")
 
     return (
-        loans.assign(home_ownership=loans["home_ownership"].replace("NONE", "OTHER"))
+        loans.assign(term=loans["term"].str.strip("months"))
         .assign(revol_util=pd.to_numeric(loans["revol_util"].str.strip("%")))
-        .assign(term=loans["term"].str.strip("months"))
+        .assign(home_ownership=loans["home_ownership"].replace("NONE", "OTHER"))
+        .assign(fico_avg=loans[["fico_range_low", "fico_range_high"]].mean(axis="columns"))
+        .drop(columns=["fico_range_low", "fico_range_high"])
     )
 
 
@@ -162,7 +164,7 @@ def execute_processing(loans: pd.DataFrame) -> pd.DataFrame:
         .pipe(filter_non_unique_values)
         .pipe(remove_unnecessary_columns)
         .pipe(map_categorical, mapping=MAPPING)
-        .pipe(apply_string_transformations)
+        .pipe(apply_transformations)
         .pipe(handle_outliers)
         .pipe(create_dummies)
         .pipe(to_upper)
