@@ -1,0 +1,22 @@
+[project]
+name = "lending-club"
+version = "0.1.0"
+description = "Default template for PDM package"
+authors = [
+    {name = "Michal", email = "mcpiatkowski@gmail.com"},
+]
+dependencies = [
+    "jupyter>=1.0.0",
+    "pandas>=2.2.2",
+]
+requires-python = "==3.12.*"
+readme = "README.md"
+license = {text = "MIT"}
+
+
+[tool.pdm]
+distribution = false
+
+[tool.ruff]
+line-length = 120
+lint.extend-select = ["I"]
